@@ -3,7 +3,8 @@ NGWF optimisation in ONETEP
 ============================
 
 :Author: Brad Ayers, University of Southampton
-:Date:   July 2026
+:Date:   July 2026; NGWF/kernel block descent added October 2026 by Nicholas
+         Hine, assisted by Claude Opus 5.5
 
 Overview
 ========
@@ -11,15 +12,20 @@ Overview
 A ground-state calculation in ONETEP is a pair of nested loops. The inner loop
 optimises the density kernel :math:`K^{\alpha\beta}` with the NGWFs held
 fixed, and the outer loop then relaxes the NGWFs
-:math:`\{\phi_{\alpha}(\mathbf{x})\}` themselves. Everything on this page
-concerns the outer loop. Three optimisers are available for it, and
+:math:`\{\phi_{\alpha}(\mathbf{x})\}` themselves. Most of this page
+concerns the outer loop. Four optimisers are available for it, and
 ``ngwf_cg_type`` chooses between them:
 
 .. code::
 
-   ngwf_cg_type : NGWF_FLETCHER    # conjugate gradients (default)
-   ngwf_cg_type : NGWF_POLAK       # conjugate gradients, Polak-Ribiere
-   ngwf_cg_type : NGWF_LBFGS       # limited-memory BFGS
+   ngwf_cg_type : NGWF_FLETCHER     # conjugate gradients (default)
+   ngwf_cg_type : NGWF_POLAK        # conjugate gradients, Polak-Ribiere
+   ngwf_cg_type : NGWF_LBFGS        # limited-memory BFGS
+   ngwf_cg_type : NGWF_LBFGS_BLOCK  # NGWF/kernel block descent
+
+The last of these does not nest the loops at all. It alternates L-BFGS steps on
+the NGWFs, taken with the kernel held fixed, with short blocks of kernel
+iterations, as described in `NGWF/kernel block descent`_.
 
 Choosing an optimiser
 ---------------------
@@ -30,14 +36,37 @@ iteration, so which of the pair converges faster is a property of the system
 rather than a general rule.
 
 ``NGWF_LBFGS`` approximates the inverse Hessian from the last
-``ngwf_lbfgs_history`` steps, twelve of them by default, at the cost of one
-extra set of NGWF-sized arrays per stored step. On metallic systems it usually
+``ngwf_lbfgs_history`` steps, twelve of them by default, at the cost of three
+NGWF-sized arrays per stored step. On metallic systems it usually
 converges in fewer NGWF iterations than conjugate gradients does. Repeat runs
 of the same input reproduce to the last digit.
 
 One interaction is worth knowing about. Under :ref:`fast-density`,
-``NGWF_LBFGS`` fixes :ref:`trimmed-boxes-threshold` at :math:`10^{-7}` rather
-than leaving it adaptive. Setting that keyword yourself overrides the choice.
+``NGWF_LBFGS`` and ``NGWF_LBFGS_BLOCK`` fix :ref:`trimmed-boxes-threshold` at
+:math:`10^{-7}` rather than leaving it adaptive. Setting that keyword yourself
+overrides the choice.
+
+.. warning::
+   With ``NGWF_LBFGS``, set :ref:`occ-mix` to zero. Its default, 0.25, replaces
+   part of the covariant gradient :math:`g_{\alpha}` with an
+   occupancy-preconditioned term built from :math:`S^{-1}H`, so that
+   :math:`g_{\alpha}` is no longer the image of :math:`g^{\alpha}` under the
+   metric. The curvature pairs then pair two different gradients, the
+   inverse-Hessian estimate need not be positive definite, and the L-BFGS
+   direction can point uphill. This happens mostly on flat parts of the energy
+   surface, where the optimiser falls back to steepest descent and may stall
+   above the minimum. ``NGWF_LBFGS_BLOCK`` sets ``occ_mix`` to zero by default
+   and stops if any other value is given.
+
+``NGWF_LBFGS_BLOCK`` pays off most with the LNV kernel optimiser. There the
+nested scheme re-solves the kernel at every NGWF step, and most of those
+iterations are discarded by the next step. On a bilayer MoSe\ :sub:`2` test it
+was about six times faster than ``NGWF_LBFGS``. With :ref:`edft` the gain is
+smaller, because the nested EDFT inner loop already stops after a few
+iterations once the NGWFs settle. On a FeSe monolayer it was about 20% faster,
+and on small systems it costs about the same as ``NGWF_LBFGS``. In both cases
+every trial energy is variational and the final kernel is converged to a
+stated threshold.
 
 All three fast paths work with ``NGWF_LBFGS`` and on most systems make no
 difference to the iteration count. :ref:`fast-ngwf-gradient` is the exception:
@@ -326,18 +355,176 @@ error, it declares a numerical floor when any one of the following holds:
 -  three consecutive steps whose energy change was too small to judge,
 -  two consecutive step-floor resets.
 
+NGWF/kernel block descent
+=========================
+
+``NGWF_LBFGS_BLOCK`` replaces the nested loops by an alternation. Each outer
+iteration takes one L-BFGS step on the NGWFs with the kernel held fixed, judges
+that step at once on the fixed-kernel energy surface, and then runs a short
+block of kernel iterations at the new NGWFs. The L-BFGS machinery of the
+previous section is reused unchanged: the two-loop direction, the
+steepest-descent fallback, the Wolfe tests, pair admission and retirement, and
+the termination rules. What changes is what is held fixed along a step, when
+the step is judged, and when the run may stop.
+
+The held kernel
+---------------
+
+The kernel cannot simply be frozen as a matrix, since its meaning depends on
+the overlap matrix, which changes with the NGWFs. What is held is the part of
+the kernel that the NGWF step should not move.
+
+With LNV (:ref:`exact-lnv`, the default), the auxiliary kernel is idempotent at
+the end of a kernel block, :math:`L = C C^{\dagger}`, and the coefficients
+:math:`C` of the occupied subspace are held. At trial NGWFs with overlap
+:math:`S'` the kernel is the projector
+
+.. math::
+   K' = C \left( C^{\dagger} S' C \right)^{-1} C^{\dagger} ,
+
+reached by purifying :math:`L` to convergence in :math:`S'`. :math:`K'` is
+idempotent and holds the right number of electrons, so every trial energy is
+variational. If purification cannot reach it, because an occupancy of
+:math:`LS'` has left :math:`(-\tfrac{1}{2}, \tfrac{3}{2})` or has crossed
+:math:`\tfrac{1}{2}`, the trial is priced as an overshoot and the line search
+shortens the step.
+
+With :ref:`edft`, the molecular-orbital coefficients :math:`M` and the
+occupancies :math:`f` are held. At trial NGWFs the orbitals are
+Löwdin-orthonormalised in :math:`S'`,
+
+.. math::
+   M' = M \left( M^{\dagger} S' M \right)^{-1/2} , \qquad
+   K' = M' f M'^{\dagger} .
+
+:math:`K'` has occupancies :math:`f` and the right number of electrons for any
+:math:`S'`, and the entropy does not change along the step, so every trial free
+energy is variational. The NGWF gradient at fixed :math:`(M, f)` uses the
+Hermitian part of :math:`-S^{-1} H K`,
+
+.. math::
+   Q = -\tfrac{1}{2} \left( S^{-1} H K + K H S^{-1} \right) ,
+
+which is exact for any kernel. The one-sided form used by nested EDFT is
+exact only once the inner loop has converged.
+
+Judging a step
+--------------
+
+In the nested scheme a step is judged one iteration late, against the energy
+after the next kernel optimisation (`The deferred Wolfe verdict`_). Block
+descent judges each step as soon as it is committed. It rebuilds the
+Hamiltonian at the held kernel :math:`K'` and evaluates the energy and the
+NGWF gradient there. It then applies the same Wolfe tests and model quality to
+that fixed-kernel energy, before any kernel iterations are spent. The
+curvature pair is formed on the same surface,
+
+.. math::
+   y = g(K', \phi^{(k+1)}) - g(K^{(k)}, \phi^{(k)}) ,
+
+so it measures the curvature of the NGWFs alone, uncontaminated by the
+kernel's own progress. A rejected step is retaken along the same direction,
+as in the nested scheme, and judged again straight away. If it is still
+rejected after three retries, the direction is abandoned: the NGWFs and the
+kernel return to the start of the step, and no pair is stored.
+
+The kernel block
+----------------
+
+The kernel block then runs at fixed NGWFs, starting from :math:`K'`, so its
+first energy is the energy at which the step was judged.
+
+- **LNV:** :ref:`minit-lnv` iterations, with no adaptive increase from one
+  NGWF iteration to the next. The kernel is repaired on entry only if its
+  occupancies have become unstable.
+- **EDFT:** up to :ref:`edft-maxit` iterations. The block ends earlier when
+  the usual EDFT convergence criteria are met, or when the commutator
+  :math:`[H, K]` falls below :ref:`edft-block-threshold`. Each iteration must
+  lower the free energy, so the default ``edft_update_scheme : DAMP_FIXPOINT``,
+  with its line search, is required.
+
+Kernel iterations and accepted NGWF steps both lower the energy, so it
+normally falls monotonically through the run.
+
+Stopping
+--------
+
+The run stops only when two tests pass together. The NGWF gradient must be
+below :ref:`ngwf-threshold-orig`, and the last kernel block must have
+converged:
+
+- **LNV:** to :ref:`lnv-block-threshold` (the LNV gradient or commutator,
+  whichever LNV is set to test);
+- **EDFT:** to a commutator below :ref:`edft-block-threshold`.
+
+Both thresholds default to ``ngwf_threshold_orig``. When the NGWFs have
+converged but the kernel has not, the next block is extended. LNV runs to
+:ref:`maxit-lnv` iterations. EDFT ignores its own convergence criteria and
+stops only on the commutator threshold or ``edft_maxit``. The numerical floor
+of `Termination`_ is declared only on a converged kernel.
+
+.. note::
+   The EDFT commutator has a numerical floor of its own, around
+   :math:`10^{-9}` on a small molecule. An ``edft_block_threshold`` below that
+   floor is never met, and the run continues to ``maxit_ngwf_cg``.
+
+Restrictions
+------------
+
+``NGWF_LBFGS_BLOCK`` stops with an error unless:
+
+- :ref:`occ-mix` is zero. This is the default for this optimiser; see the
+  warning in `Choosing an optimiser`_.
+- :ref:`kernel-update`, :ref:`ngwf-cg-rotate` and
+  ``kernel_christoffel_update`` are all off. EDFT normally switches
+  ``ngwf_cg_rotate`` on, but under block descent the Löwdin step takes its
+  place.
+- The k-point method is PW (or the calculation is at :math:`\Gamma` only), and
+  embedding is not used.
+- The kernel optimiser is LNV with ``exact_lnv`` on, or EDFT. Mermin, kernel
+  DIIS, conduction calculations, cDFT, DFT+:math:`\nu`, DFT+U and EDA are not
+  supported.
+- With EDFT: FOE is off, the ensemble is canonical (not
+  ``edft_grand_canonical``), ``edft_spin_fix`` is not positive (the default,
+  holding the spin throughout, is fine), ``edft_update_scheme`` is
+  ``DAMP_FIXPOINT`` and no ``edft_trial_step`` is set.
+
 Keywords
 ========
 
 -  ``ngwf_cg_type`` [Basic, string, default ``NGWF_FLETCHER``\ ] The
-   outer-loop optimiser: one of ``NGWF_FLETCHER``, ``NGWF_POLAK`` or
-   ``NGWF_LBFGS``. An unrecognised value stops the calculation.
+   outer-loop optimiser: one of ``NGWF_FLETCHER``, ``NGWF_POLAK``,
+   ``NGWF_LBFGS`` or ``NGWF_LBFGS_BLOCK``. An unrecognised value stops the
+   calculation.
 
 -  ``ngwf_lbfgs_history`` [Basic, integer, default ``12``\ ] How many
-   curvature pairs ``NGWF_LBFGS`` stores. Must be positive.
+   curvature pairs ``NGWF_LBFGS`` and ``NGWF_LBFGS_BLOCK`` store. Must be
+   positive.
+
+-  ``occ_mix`` [Expert, real, default ``0.25``, or ``0`` under
+   ``NGWF_LBFGS_BLOCK``\ ] Fraction of the NGWF gradient that is occupancy
+   preconditioned. Set it to zero with ``NGWF_LBFGS``; ``NGWF_LBFGS_BLOCK``
+   requires zero.
+
+-  ``lnv_block_threshold`` [Basic, real, default ``ngwf_threshold_orig``\ ]
+   Under ``NGWF_LBFGS_BLOCK`` with LNV, the LNV convergence threshold of each
+   kernel block and of the joint stopping test. Must be positive.
+
+-  ``edft_block_threshold`` [Basic, real, default ``ngwf_threshold_orig``\ ]
+   Under ``NGWF_LBFGS_BLOCK`` with EDFT, the commutator threshold that ends a
+   kernel block early and that the joint stopping test requires. Must be
+   positive.
 
 -  ``devel_code : LBFGS_DIAG`` [Developer] Print a diagnostic block for every
-   L-BFGS step.
+   L-BFGS step. Under ``NGWF_LBFGS_BLOCK`` it also prints a
+   finite-difference slope and curvature line along any L-BFGS direction that
+   fails the descent test.
+
+-  ``devel_code : BLOCK_FD_SLOPE`` [Developer] Under ``NGWF_LBFGS_BLOCK``,
+   print the finite-difference slope and curvature of the fixed-kernel energy
+   beside the analytic :math:`\langle g, d \rangle` along every chosen
+   direction, for two step sizes. Each direction costs five extra energy
+   evaluations.
 
 -  ``devel_code : NGWF_SIGNDIAG`` [Developer] Print the signed value of
    :math:`\langle g, g \rangle` at each inner iteration.
@@ -385,6 +572,24 @@ step actually taken follows:
 steepest-descent fallback, and ``Outcome`` is ``ACCEPTED``, ``REJECTED`` or
 ``NEUTRAL``. Any event raised during a step, such as a retired pair or a
 history reset, is printed immediately above the block.
+
+``NGWF_LBFGS_BLOCK`` prints the verdict straight after the step, before the
+kernel block, and adds the fixed-kernel energy at which the step was judged:
+
+.. code-block:: fortran
+
+   --------------------- Fixed-kernel verdict on iteration 004 --------------------
+   Outcome                     =               ACCEPTED
+   Model quality (rho)         =               1.120853
+   Energy change               =        -4.20053207E-03
+   Sufficient decrease         =        -7.49523858E-05
+   Curvature g . d             =        -9.15489979E-04
+   Fixed-kernel energy         =      -6.16305239433329
+
+A rejected step is followed by a further verdict block for each retry along
+the same direction. A direction abandoned after three retries is reported
+above the next block as ``NGWF-BLOCK: step still rejected after  3 retreats;
+NGWFs restored.``
 
 The diagnostic block
 --------------------

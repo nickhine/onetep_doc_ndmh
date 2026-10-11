@@ -269,7 +269,17 @@ Basic setup
    Ensemble-DFT calculations.
 
 -  ``edft_maxit: n`` [Integer, default ``edft_maxit: 10``]. Number of
-   EDFT iterations in the ONETEP inner loop.
+   EDFT iterations in the ONETEP inner loop. Under
+   ``ngwf_cg_type: NGWF_LBFGS_BLOCK`` it is the maximum length of each
+   kernel block (see :doc:`ngwf_optimisation`).
+
+-  ``edft_block_threshold: x`` [Real, default ``ngwf_threshold_orig``\ ].
+   Under ``ngwf_cg_type: NGWF_LBFGS_BLOCK`` only: a kernel block ends once
+   the commutator :math:`[H, K]` is below this value, and the calculation
+   stops only when both it and the NGWF gradient are converged. Block
+   descent with EDFT requires ``edft_update_scheme: damp_fixpoint`` with the
+   line search, and does not support FOE, the grand-canonical ensemble or a
+   positive ``edft_spin_fix``.
 
 -  ``edft_smearing_width: x units`` [Real physical, default
    ``edft_smearing_width: 0.1 eV``\ ]. Sets the value of the smearing

@@ -5552,6 +5552,37 @@ Enable finite-temperature DFT calculations with the Ensemble-DFT method. Recomme
 
       EDFT T
 
+.. _edft-block-threshold:
+
+EDFT_BLOCK_THRESHOLD
+--------------------
+
+:Type: Double-Precision
+:Default: ngwf_threshold_orig
+:Unit: None
+:Level: Intermediate
+:Group: EDFT
+:Search: :searchlink:`EDFT_BLOCK_THRESHOLD`
+
+Kernel convergence threshold (EDFT commutator) required together with ngwf_threshold_orig to stop an NGWF_LBFGS_BLOCK optimisation with EDFT; defaults to ngwf_threshold_orig
+
+Used only with NGWF_CG_TYPE NGWF_LBFGS_BLOCK and :ref:`edft`. An EDFT kernel block ends early once the commutator [H,K] is below this value, and the calculation stops only when both the commutator and the NGWF gradient are converged. Once the NGWFs have converged, kernel blocks run until the commutator meets this threshold or EDFT_MAXIT is reached. The commutator has a numerical floor (around 1e-9 for a small molecule); a threshold below it is never met. Must be positive.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      EDFT_BLOCK_THRESHOLD [Real]
+
+   :Example:
+
+   .. code::
+
+      EDFT_BLOCK_THRESHOLD 1.0e-6
+
 .. _edft-commutator-thres:
 
 EDFT_COMMUTATOR_THRES
@@ -5825,7 +5856,7 @@ EDFT_MAXIT
 
 Maximum number of :ref:`edft` iterations to optimise the kernel
 
-Maximum number of inner loop iterations in calculations with the :ref:`edft` method.
+Maximum number of inner loop iterations in calculations with the :ref:`edft` method. Under NGWF_CG_TYPE NGWF_LBFGS_BLOCK it is the maximum length of each EDFT kernel block.
 
 .. note::
    :collapsible: closed
@@ -11844,6 +11875,37 @@ Functional ID for the exchange functional (used in calculations employing the LI
 
       LIBXC_X_FUNC_ID 13
 
+.. _lnv-block-threshold:
+
+LNV_BLOCK_THRESHOLD
+-------------------
+
+:Type: Double-Precision
+:Default: ngwf_threshold_orig
+:Unit: None
+:Level: Intermediate
+:Group: CONV
+:Search: :searchlink:`LNV_BLOCK_THRESHOLD`
+
+Kernel convergence threshold (LNV gradient or commutator) required together with ngwf_threshold_orig to stop an NGWF_LBFGS_BLOCK optimisation; defaults to ngwf_threshold_orig
+
+Used only with NGWF_CG_TYPE NGWF_LBFGS_BLOCK and the LNV kernel optimiser. It is the LNV convergence threshold of each kernel block, and the calculation stops only when the last block has converged to it and the NGWF gradient is converged. Must be positive.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      LNV_BLOCK_THRESHOLD [Real]
+
+   :Example:
+
+   .. code::
+
+      LNV_BLOCK_THRESHOLD 1.0e-6
+
 .. _lnv-cg-max-step:
 
 LNV_CG_MAX_STEP
@@ -15408,9 +15470,9 @@ NGWF_CG_TYPE
 :Group: CONV
 :Search: :searchlink:`NGWF_CG_TYPE`
 
-Type of CG coefficient for NGWF optimisation  NGWF_POLAK = Polak-Ribbiere formula;  NGWF_FLETCHER = Fletcher-Reeves formula;  NGWF_LBFGS = limited-memory BFGS with a trust-region step.
+Type of CG coefficient for NGWF optimisation  NGWF_POLAK = Polak-Ribbiere formula;  NGWF_FLETCHER = Fletcher-Reeves formula;  NGWF_LBFGS = limited-memory BFGS with a deferred Wolfe step;  NGWF_LBFGS_BLOCK = L-BFGS steps at a fixed occupied subspace alternating with minit_lnv LNV iterations, or with edft_maxit EDFT iterations at fixed MOs and occupancies (block descent).
 
-Specifies the variant of the conjugate gradients algorithm used for the optimization of the NGWFs, currently either NGWF_FLETCHER for Fletcher-Reeves or NGWF_POLAK for Polak-Ribiere.
+Selects the NGWF optimiser: NGWF_FLETCHER (conjugate gradients, Fletcher-Reeves), NGWF_POLAK (conjugate gradients, Polak-Ribiere), NGWF_LBFGS (limited-memory BFGS) or NGWF_LBFGS_BLOCK (NGWF/kernel block descent, which alternates L-BFGS steps on the NGWFs at a fixed kernel with short kernel blocks instead of nesting the kernel optimisation). With NGWF_LBFGS, set OCC_MIX to 0; NGWF_LBFGS_BLOCK requires it. See :doc:`ngwf_optimisation`.
 
 .. note::
    :collapsible: closed
@@ -15457,6 +15519,37 @@ Specifies a halo size for the NGWFs to include matrix elements between NGWFs whi
    .. code::
 
       NGWF_HALO 1.0
+
+.. _ngwf-lbfgs-history:
+
+NGWF_LBFGS_HISTORY
+------------------
+
+:Type: Integer
+:Default: 12
+:Unit: None
+:Level: Basic
+:Group: CONV
+:Search: :searchlink:`NGWF_LBFGS_HISTORY`
+
+Number of curvature pairs stored by the NGWF L-BFGS optimiser
+
+Number of (step, gradient change) pairs from which NGWF_LBFGS and NGWF_LBFGS_BLOCK build their approximation to the inverse Hessian. Each pair stores three NGWF-sized arrays. Must be positive.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      NGWF_LBFGS_HISTORY [Integer]
+
+   :Example:
+
+   .. code::
+
+      NGWF_LBFGS_HISTORY 8
 
 .. _ngwf-max-grad:
 
@@ -15700,7 +15793,7 @@ OCC_MIX
 
 Mix fraction of occupancy preconditioned NGWF cov grad
 
-Specifies the fraction of the NGWF gradient to which occupancy preconditioning is applied.
+Specifies the fraction of the NGWF gradient to which occupancy preconditioning is applied. With NGWF_CG_TYPE NGWF_LBFGS, set it to 0: a nonzero value makes the covariant gradient differ from the image of the contravariant one under the metric, so the L-BFGS curvature pairs pair two different gradients and its directions can point uphill. Under NGWF_LBFGS_BLOCK the default is 0, and any other value stops the calculation.
 
 .. note::
    :collapsible: closed
