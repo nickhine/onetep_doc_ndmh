@@ -26,17 +26,17 @@ to the Kohn-Sham total energy,
 .. math::
    :label: disp_corr
 
-   E_{DFT-D} = E_{KS-DFT} + E_{disp}
+   E_{\text{DFT-D}} = E_{\text{KS-DFT}} + E_{\mathrm{disp}}.
 
-The leading dispersion energy correction to :math:`E_{disp}`, common to
+The leading dispersion energy correction to :math:`E_{\mathrm{disp}}`, common to
 all models, is a damped pairwise sum of :math:`C_6/R^6` terms over atoms
 and their periodic images [Vasp]_, [Hill2009]_:
 
 .. math::
    :label: E^{(6)}_{disp}
 
-   E^{(6)}_{disp} = -\frac{1}{2}\cdot s_6\cdot \sum^{N_{at}}_{i=1} \sum^{N_{at}}_{j=1}
-   \sum_{L}^* \dfrac{C_{6,ij}}{R^6_{ij}} f_{damp}( R_{ij} ) g_{smooth}(R_{ij})
+   E^{(6)}_{\mathrm{disp}} = -\frac{1}{2}\cdot s_6\cdot \sum^{N_{\mathrm{at}}}_{i=1} \sum^{N_{\mathrm{at}}}_{j=1}
+   \sum_{L}^* \dfrac{C_{6,ij}}{R^6_{ij}} f_{\mathrm{damp}}( R_{ij} ) g_{\mathrm{smooth}}(R_{ij}).
 
 Here:
 
@@ -46,7 +46,7 @@ Here:
    :math:`ij`,
 
 -  :math:`L` denotes all translations of the unit cell within the van
-   der Waals radial cutoff :math:`R_{cut}`,
+   der Waals radial cutoff :math:`R_{\mathrm{cut}}`,
 
 -  :math:`*` denotes :math:`i\ne j` in :math:`L=0`
 
@@ -54,12 +54,12 @@ Here:
    \overrightarrow{R^L_{j}} |` between atom i in the parent cell
    :math:`L=0` and the atom j in all possible translations :math:`L`,
 
--  :math:`f_{damp}(R_{ij})` is a damping function that is unity at large
+-  :math:`f_{\mathrm{damp}}(R_{ij})` is a damping function that is unity at large
    distances and zero at small
    distances [Hill2009]_, [Grimme2006]_; for the order-:math:`n` terms of
-   Grimme's D3 and D4 corrections it is written :math:`f_{damp,n}(R_{ij})`,
+   Grimme's D3 and D4 corrections it is written :math:`f_{\mathrm{damp},n}(R_{ij})`,
 
--  :math:`g_{smooth}(R_{ij})` is a smoothing function for truncating the
+-  :math:`g_{\mathrm{smooth}}(R_{ij})` is a smoothing function for truncating the
    interactions beyond van der Waals radial cutoff.
 
 For Grimme's D3 corrections, the :math:`C_{6,ij}` coefficients depend on
@@ -74,15 +74,15 @@ term :eq:`E^{ATM}_{disp}`, and thus
 .. math::
    :label: E_disp_d3d4
 
-   E_{disp} = E^{(6)}_{disp} + E^{(8)}_{disp} + E^{ATM}_{disp}
+   E_{\mathrm{disp}} = E^{(6)}_{\mathrm{disp}} + E^{(8)}_{\mathrm{disp}} + E^{\mathrm{ATM}}_{\mathrm{disp}},
 
 where
 
 .. math::
    :label: E^{(8)}_{disp}
 
-   E^{(8)}_{disp} = -\frac{1}{2}\cdot s_8\cdot \sum^{N_{at}}_{i=1} \sum^{N_{at}}_{j=1}
-   \sum_{L}^* \dfrac{C_{8,ij}}{R^8_{ij}} f_{damp,8}( R_{ij} ) g_{smooth}(R_{ij})
+   E^{(8)}_{\mathrm{disp}} = -\frac{1}{2}\cdot s_8\cdot \sum^{N_{\mathrm{at}}}_{i=1} \sum^{N_{\mathrm{at}}}_{j=1}
+   \sum_{L}^* \dfrac{C_{8,ij}}{R^8_{ij}} f_{\mathrm{damp},8}( R_{ij} ) g_{\mathrm{smooth}}(R_{ij}),
 
 for some functional-dependent scaling factor :math:`s_8`. Here,
 :math:`C_{8,ij} = 3\sqrt{Q_i Q_j}\,C_{6,ij}` is obtained from the
@@ -98,15 +98,15 @@ The Axilrod-Teller-Muto term is given by
 .. math::
    :label: E^{ATM}_{disp}
 
-   E^{ATM}_{disp} = s_9 \sum_{ijk} C_{9,ijk}\,A_{ijk}\,f_{ijk},
-   \qquad
-   A_{ijk} = \frac{3\cos\theta_{ij}\cos\theta_{jk}\cos\theta_{ik} + 1}
+   E^{\mathrm{ATM}}_{\mathrm{disp}} &= s_9 \sum_{ijk} C_{9,ijk}\,A_{ijk}\,f_{ijk},
+   \\
+   A_{ijk} &= \frac{3\cos\theta_{ij}\cos\theta_{jk}\cos\theta_{ik} + 1}
                   {\left(R_{ij}R_{jk}R_{ik}\right)^3},
    \qquad
-   f_{ijk} = \frac{1}{1 + 6\left(\bar{R}_{0,ijk}/\bar{R}_{ijk}\right)^{16}}
+   f_{ijk} = \frac{1}{1 + 6\left(\bar{R}_{0,ijk}/\bar{R}_{ijk}\right)^{16}},
 
 where the sum runs over unique triples of atoms, including periodic
-images within :math:`R_{cut}`. Here, :math:`\theta_{ij}` denotes the angle
+images within :math:`R_{\mathrm{cut}}`. Here, :math:`\theta_{ij}` denotes the angle
 formed between atoms :math:`i`, :math:`j`, and :math:`k` that lies
 opposite the side :math:`R_{ij}` in the summation;
 :math:`C_{9,ijk} = \sqrt{C_{6,ij}C_{6,ik}C_{6,jk}}`; and
@@ -117,15 +117,15 @@ times the tabulated cutoff radii :math:`R_{0,ij}` is used, while Grimme's
 D4 corrections use the Becke-Johnson radii
 :math:`a_1\sqrt{C_{8,ij}/C_{6,ij}} + a_2`. The :math:`s_9` parameter is 1
 when the three-body term is included and 0 otherwise, and the three-body
-term uses a cutoff that is the smaller of :math:`R_{cut}` and 40 bohr.
+term uses a cutoff that is the smaller of :math:`R_{\mathrm{cut}}` and 40 bohr.
 
-For the in-built dispersion corrections, :math:`E^{(8)}_{disp}` and
-:math:`E^{ATM}_{disp}` are zero, and thus
+For the in-built dispersion corrections, :math:`E^{(8)}_{\mathrm{disp}}` and
+:math:`E^{\mathrm{ATM}}_{\mathrm{disp}}` are zero, and thus
 
 .. math::
    :label: E_disp_inbuilt
 
-   E_{disp} = E^{(6)}_{disp}
+   E_{\mathrm{disp}} = E^{(6)}_{\mathrm{disp}},
 
 where the dispersion coefficients and the form of the damping function
 are dependent upon the desired empirical vdW correction model. Damping
@@ -133,41 +133,42 @@ functions for the in-built dispersion corrections are given below:
 
 .. list-table::
    :widths: 14 30 32 20
+   :width: 100%
    :header-rows: 1
 
    * - Dispersion Correction
      - Description
-     - Damping function :math:`f_{damp}( R_{ij} )`
+     - Damping function :math:`f_{\mathrm{damp}}( R_{ij} )`
      - vdW radii (:math:`R_{0,ij}`)
    * - ``ELSTNER``
      - Elstner's damping function [Elstner2001]_.
-     - :math:`(1-\exp(-c_{damp}(R_{ij}/R_{0,ij})^7))^4`
-     - :math:`\frac{{R_{0,i}}^3+{R_{0,j}}^3}{{R_{0,i}}^2+{R_{0,j}}^2}`
+     - :math:`(1-\exp(-c_{\mathrm{damp}}(R_{ij}/R_{0,ij})^7))^4`
+     - :math:`\dfrac{{R_{0,i}}^3+{R_{0,j}}^3}{{R_{0,i}}^2+{R_{0,j}}^2}`
    * - ``WUYANG1``
      - First Wu-Yang damping function [Wu2002]_.
-     - :math:`(1-\exp(-c_{damp}(R_{ij}/R_{0,ij})^3))^2`
-     - :math:`\frac{{R_{0,i}}^3+{R_{0,j}}^3}{{R_{0,i}}^2+{R_{0,j}}^2}`
+     - :math:`(1-\exp(-c_{\mathrm{damp}}(R_{ij}/R_{0,ij})^3))^2`
+     - :math:`\dfrac{{R_{0,i}}^3+{R_{0,j}}^3}{{R_{0,i}}^2+{R_{0,j}}^2}`
    * - ``WUYANG2``
      - Second Wu-Yang damping function [Wu2002]_.
-     - :math:`\frac{1}{1+\exp(-c_{damp}(R_{ij}/R_{0,ij}-1))}`
-     - :math:`\frac{{R_{0,i}}^3+{R_{0,j}}^3}{{R_{0,i}}^2+{R_{0,j}}^2}`
+     - :math:`\dfrac{1}{1+\exp(-c_{\mathrm{damp}}(R_{ij}/R_{0,ij}-1))}`
+     - :math:`\dfrac{{R_{0,i}}^3+{R_{0,j}}^3}{{R_{0,i}}^2+{R_{0,j}}^2}`
    * - ``GRIMMED2``
      - Grimme's D2 dispersion correction [Grimme2006]_.
-     - :math:`\frac{1}{1+\exp(-c_{damp}(R_{ij}/R_{0,ij}-1))}`
+     - :math:`\dfrac{1}{1+\exp(-c_{\mathrm{damp}}(R_{ij}/R_{0,ij}-1))}`
      - :math:`{R_{0,i}}+{R_{0,j}}`
 
-for some damping constant :math:`c_{damp}` (referred to as :math:`d`
+for some damping constant :math:`c_{\mathrm{damp}}` (referred to as :math:`d`
 within the literature of Grimme [Grimme2006]_ and
-:math:`c_{damp}` by Hill [Hill2009]_) and
+:math:`c_{\mathrm{damp}}` by Hill [Hill2009]_) and
 :math:`R_{0,ij}` is determined by the vdW radii of the atomic pair
 :math:`i` and :math:`j`.
 
 The smoothing function for in-built dispersion corrections has the
 following form:
 
-.. math:: g_{smooth}(R_{ij})=1-e^{-\left(R_{ij}-R_{cut}\right)^2}
+.. math:: g_{\mathrm{smooth}}(R_{ij})=1-e^{-\left(R_{ij}-R_{\mathrm{cut}}\right)^2},
 
-where :math:`R_{cut}` is the radial cutoff for van der Waals interactions,
+where :math:`R_{\mathrm{cut}}` is the radial cutoff for van der Waals interactions,
 and can be set by the following keyword in the input file:
 
 ``vdw_radial_cutoff: x units`` [Real physical, default
@@ -182,34 +183,35 @@ applied to each pairwise term, with :math:`\alpha_6 = 14` and
 
 .. list-table::
    :widths: 14 30 32 20
+   :width: 100%
    :header-rows: 1
 
    * - Dispersion Correction
      - Description
-     - Damping function :math:`f_{damp,n}( R_{ij} )`
+     - Damping function :math:`f_{\mathrm{damp},n}( R_{ij} )`
      - vdW radii (:math:`R_{0,ij}`)
    * - ``D3``
      - Grimme's zero damping function [Grimme2010]_.
-     - :math:`\frac{1}{1+6\left(s_{r,n}R_{0,ij}/R_{ij}\right)^{\alpha_n}}`
+     - :math:`\dfrac{1}{1+6\left(s_{\mathrm{r},n}R_{0,ij}/R_{ij}\right)^{\alpha_n}}`
      - Tabulated pairwise cutoff radii [Grimme2010]_
    * - ``D3BJ``
      - Becke-Johnson damping function [Grimme2011]_.
-     - :math:`\frac{R_{ij}^n}{R_{ij}^n+\left(a_1R_{0,ij}+a_2\right)^n}`
+     - :math:`\dfrac{R_{ij}^n}{R_{ij}^n+\left(a_1R_{0,ij}+a_2\right)^n}`
      - :math:`\sqrt{C_{8,ij}/C_{6,ij}}`
    * - ``D3M``
      - Modified zero damping function [Smith2016]_.
-     - :math:`\frac{1}{1+6\left(R_{ij}/(s_{r,n}R_{0,ij})+\beta R_{0,ij}\right)^{-\alpha_n}}`
+     - :math:`\dfrac{1}{1+6\left(R_{ij}/(s_{\mathrm{r},n}R_{0,ij})+\beta R_{0,ij}\right)^{-\alpha_n}}`
      - Tabulated pairwise cutoff radii [Grimme2010]_
    * - ``D3MBJ``
      - Modified Becke-Johnson damping function [Smith2016]_.
-     - :math:`\frac{R_{ij}^n}{R_{ij}^n+\left(a_1R_{0,ij}+a_2\right)^n}`
+     - :math:`\dfrac{R_{ij}^n}{R_{ij}^n+\left(a_1R_{0,ij}+a_2\right)^n}`
      - :math:`\sqrt{C_{8,ij}/C_{6,ij}}`
    * - ``D4``, ``D4S``
      - Becke-Johnson damping function [Caldeweyher2019]_.
-     - :math:`\frac{R_{ij}^n}{R_{ij}^n+\left(a_1R_{0,ij}+a_2\right)^n}`
+     - :math:`\dfrac{R_{ij}^n}{R_{ij}^n+\left(a_1R_{0,ij}+a_2\right)^n}`
      - :math:`\sqrt{C_{8,ij}/C_{6,ij}}`
 
-where :math:`s_{r,n}`, :math:`\beta`, :math:`a_1` and :math:`a_2` are
+where :math:`s_{\mathrm{r},n}`, :math:`\beta`, :math:`a_1` and :math:`a_2` are
 functional-dependent damping parameters.
 
 Forces
@@ -218,12 +220,12 @@ Forces
 During geometry optimization, force corrections are calculated from the
 derivative of the dispersion energy with respect to the ionic coordinates
 :math:`\{\mathbf{s}_i\}`. For a given dispersion correction, the
-corresponding force correction can be expressed as:
+corresponding force correction can be expressed as
 
 .. math::
    :label: F_total
 
-   \mathbf{F}_i = -\frac{dE_{disp}}{d\mathbf{s}_i}
+   \mathbf{F}_i = -\frac{dE_{\mathrm{disp}}}{d\mathbf{s}_i}.
 
 For the four in-built dispersion corrections, the total force correction
 is thus
@@ -231,27 +233,28 @@ is thus
 .. math::
    :label: F_total_inbuilt
 
-   \mathbf{F}_i = -\frac{\partial E^{(6)}_{disp}}{\partial \mathbf{s}_i} = s_6
-   \sum^{N_{at}}_{j=1} \sum_{L}^* \dfrac{C_{6,ij}}{R^6_{ij}}
-   \left[f_{damp}(R_{ij})\,g'_{smooth}(R_{ij}) + g_{smooth}(R_{ij})
-   \left(f'_{damp}(R_{ij}) - \frac{6f_{damp}(R_{ij})}{R_{ij}}\right)\right]
-   \frac{\partial R_{ij}}{\partial \mathbf{s}_i}
+   \mathbf{F}_i = -\frac{\partial E^{(6)}_{\mathrm{disp}}}{\partial \mathbf{s}_i} &= s_6
+   \sum^{N_{\mathrm{at}}}_{j=1} \sum_{L}^* \dfrac{C_{6,ij}}{R^6_{ij}}
+   \left[f_{\mathrm{damp}}(R_{ij})\,g'_{\mathrm{smooth}}(R_{ij}) \vphantom{\frac{6f_{\mathrm{damp}}(R_{ij})}{R_{ij}}}\right. \\
+   &\quad \left. + \; g_{\mathrm{smooth}}(R_{ij})
+   \left(f'_{\mathrm{damp}}(R_{ij}) - \frac{6f_{\mathrm{damp}}(R_{ij})}{R_{ij}}\right)\right]
+   \frac{\partial R_{ij}}{\partial \mathbf{s}_i}.
 
 However, for Grimme's D3 and D4 corrections, the resulting correction
 to the forces is more complicated, with additional contributions from
-:math:`E^{(8)}_{disp}`, :math:`E^{ATM}_{disp}` (if present), and the
+:math:`E^{(8)}_{\mathrm{disp}}`, :math:`E^{\mathrm{ATM}}_{\mathrm{disp}}` (if present), and the
 position dependence of the dispersion coefficients:
 
 .. math::
    :label: F_total_d3d4
 
-   \mathbf{F}_i = -\left( \frac{dE^{(6)}_{disp}}{d\mathbf{s}_i}
-                  + \frac{dE^{(8)}_{disp}}{d\mathbf{s}_i}
-                  + \frac{dE^{ATM}_{disp}}{d\mathbf{s}_i} \right)
+   \mathbf{F}_i = -\left( \frac{dE^{(6)}_{\mathrm{disp}}}{d\mathbf{s}_i}
+                  + \frac{dE^{(8)}_{\mathrm{disp}}}{d\mathbf{s}_i}
+                  + \frac{dE^{\mathrm{ATM}}_{\mathrm{disp}}}{d\mathbf{s}_i} \right).
 
 Here, the :math:`C_{6,ij}` term is given by :eq:`F_total_inbuilt` when
-evaluated with :math:`g_{smooth} = 1`, ensuring :math:`g'_{smooth} = 0`,
-and :math:`f_{damp} = f_{damp,6}`. Hence, the force correction contains
+evaluated with :math:`g_{\mathrm{smooth}} = 1`, ensuring :math:`g'_{\mathrm{smooth}} = 0`,
+and :math:`f_{\mathrm{damp}} = f_{\mathrm{damp},6}`. Hence, the force correction contains
 three additional contributions.
 
 1. A contribution originating with the additional :math:`C_{8,ij}` term
@@ -261,32 +264,32 @@ three additional contributions.
    .. math::
       :label: F^{(8)}_{disp}
 
-      \frac{\partial E^{(8)}_{disp}}{\partial \mathbf{s}_i}\bigg|_{CN,q} =
-      -s_8 \sum^{N_{at}}_{j=1} \sum_{L}^* \dfrac{C_{8,ij}}{R^8_{ij}}
-      \left(f'_{damp,8}(R_{ij})
-      - \frac{8f_{damp,8}(R_{ij})}{R_{ij}}\right)
-      \frac{\partial R_{ij}}{\partial \mathbf{s}_i}
+      \frac{\partial E^{(8)}_{\mathrm{disp}}}{\partial \mathbf{s}_i}\bigg|_{\mathrm{CN},q} =
+      -s_8 \sum^{N_{\mathrm{at}}}_{j=1} \sum_{L}^* \dfrac{C_{8,ij}}{R^8_{ij}}
+      \left(f'_{\mathrm{damp},8}(R_{ij})
+      - \frac{8f_{\mathrm{damp},8}(R_{ij})}{R_{ij}}\right)
+      \frac{\partial R_{ij}}{\partial \mathbf{s}_i}.
 
-   Here :math:`\vert_{CN,q}` denotes a derivative taken at fixed
+   Here :math:`\vert_{\mathrm{CN},q}` denotes a derivative taken at fixed
    coordination numbers and charges, i.e. at fixed dispersion
    coefficients.
 
 2. A contribution due to the dependence of :math:`C_{6,ij}` coefficients
-   on the coordination numbers :math:`CN_k` and, for Grimme's D4
+   on the coordination numbers :math:`\mathrm{CN}_k` and, for Grimme's D4
    corrections, on the atomic partial charges :math:`q_k`, which both
-   change as the atoms move. Applying the chain rule yields:
+   change as the atoms move. Applying the chain rule yields
 
    .. math::
       :label: F^{CN,q}_{disp}
 
-      \frac{dE_{disp}}{d\mathbf{s}_i} =
-      \frac{\partial E_{disp}}{\partial \mathbf{s}_i}\bigg|_{CN,q}
-      + \sum^{N_{at}}_{k=1} \left(
-      \frac{\partial E_{disp}}{\partial CN_k}
-      \frac{\partial CN_k}{\partial \mathbf{s}_i}
-      + \frac{\partial E_{disp}}{\partial q_k}
+      \frac{dE_{\mathrm{disp}}}{d\mathbf{s}_i} =
+      \frac{\partial E_{\mathrm{disp}}}{\partial \mathbf{s}_i}\bigg|_{\mathrm{CN},q}
+      + \sum^{N_{\mathrm{at}}}_{k=1} \left(
+      \frac{\partial E_{\mathrm{disp}}}{\partial \mathrm{CN}_k}
+      \frac{\partial \mathrm{CN}_k}{\partial \mathbf{s}_i}
+      + \frac{\partial E_{\mathrm{disp}}}{\partial q_k}
       \frac{\partial q_k}{\partial \mathbf{s}_i}
-      \right)
+      \right),
 
    where the first term is the sum of the explicit contributions, and the
    third term is present for Grimme's D4 corrections only. For Grimme's
@@ -294,11 +297,11 @@ three additional contributions.
 
    .. math::
 
-      CN_k = \sum_{j \ne k} \frac{1}{1 + e^{-k_1\left(k_2
-      (R_{cov,k}+R_{cov,j})/R_{kj} - 1\right)}}
+      \mathrm{CN}_k = \sum_{j \ne k} \frac{1}{1 + e^{-k_1\left(k_2
+      (R_{\mathrm{cov},k}+R_{\mathrm{cov},j})/R_{kj} - 1\right)}}
 
    is a summation over neighbouring atoms and their periodic images, with
-   covalent radii :math:`R_{cov}`, :math:`k_1 = 16` and
+   covalent radii :math:`R_{\mathrm{cov}}`, :math:`k_1 = 16` and
    :math:`k_2 = 4/3` [Grimme2010]_. Grimme's D4 corrections use an
    error-function counting function weighted by electronegativity
    differences, with the charges :math:`q_k` obtained from an
@@ -312,11 +315,11 @@ three additional contributions.
    .. math::
       :label: F^{ATM}_{disp}
 
-      \frac{\partial E^{ATM}_{disp}}{\partial \mathbf{s}_i}\bigg|_{CN,q}
+      \frac{\partial E^{\mathrm{ATM}}_{\mathrm{disp}}}{\partial \mathbf{s}_i}\bigg|_{\mathrm{CN},q}
       = s_9 \sum_{jk} C_{9,ijk} \sum_{ab \in \{ij,\,ik\}}
       \left(\frac{\partial A_{ijk}}{\partial R_{ab}}\, f_{ijk}
       + A_{ijk}\,\frac{\partial f_{ijk}}{\partial R_{ab}}\right)
-      \frac{\partial R_{ab}}{\partial \mathbf{s}_i}
+      \frac{\partial R_{ab}}{\partial \mathbf{s}_i},
 
    where :math:`A_{ijk}` and :math:`f_{ijk}` are the angular and damping
    factors of :eq:`E^{ATM}_{disp}`, with
@@ -324,7 +327,7 @@ three additional contributions.
    .. math::
 
       \frac{\partial f_{ijk}}{\partial R_{ab}} =
-      \frac{16}{3}\,\frac{f_{ijk}\,(1 - f_{ijk})}{R_{ab}}
+      \frac{16}{3}\,\frac{f_{ijk}\,(1 - f_{ijk})}{R_{ab}}.
 
    The dependence of :math:`C_{9,ijk}` on the coordination numbers and
    charges is included in contribution 2.
@@ -390,7 +393,7 @@ and are fitted by least squares optimization of interaction energy error
 for 40 noncovalently bound complexes for the D2 correction of Grimme.
 
 In the case of using an unoptimized functional not given within the
-list, default unoptimized :math:`c_{damp}`, :math:`C_{6,ij}`, and
+list, default unoptimized :math:`c_{\mathrm{damp}}`, :math:`C_{6,ij}`, and
 :math:`R_{0,i}` values are adopted for the damping functions of Elstner
 or Wu and Yang as described by Hill [Hill2009]_ and a
 default :math:`s_6` value of 1.00 is adopted for Grimme's D2 correction
@@ -444,7 +447,7 @@ damping functions. This option allows the user to specify parameters for
 elements and functionals for which values are not given. The
 atom-dependent variables :math:`C_{6,i}` (used to calculate
 :math:`C_{6,ij}`), :math:`R_{0,i}` (related to the atomic vdW radius of
-an atom :math:`i`), and :math:`n_{eff}` (used in the calculation of
+an atom :math:`i`), and :math:`n_{\mathrm{eff}}` (used in the calculation of
 :math:`C_{6,ij}` for all damping functions excluding the D2 correction
 of Grimme) are modified using the
 
@@ -461,7 +464,7 @@ associated with nitrogen,
       7       21.1200  2.6200   2.5100
     %endblock vdw_params
 
-To override the damping constant :math:`c_{damp}` associated with a
+To override the damping constant :math:`c_{\mathrm{damp}}` associated with a
 damping function, the keyword
 
 ``vdw_dcoeff``

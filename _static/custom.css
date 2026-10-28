@@ -1,0 +1,26 @@
+/* Place equation numbers to the right of displayed equations, vertically
+   centred, rather than above them (the RTD theme has no rule for span.eqno) */
+div.math {
+    display: flex;
+    align-items: center;
+}
+div.math > span.eqno {
+    order: 2;
+    flex: none;
+    margin-left: 1em;
+}
+div.math > mjx-container {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Allow table cells to wrap so that tables fit within the page frame */
+.wy-table-responsive {
+    overflow-y: hidden;
+}
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+    white-space: normal;
+}
