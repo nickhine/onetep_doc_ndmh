@@ -258,7 +258,10 @@ BSUNFLD_CALCULATE
 :Group: BS_UNFOLDING
 :Search: :searchlink:`BSUNFLD_CALCULATE`
 
-Logical flag for bandstructure unfolding calculation
+Logical flag for bandstructure unfolding calculation. In a conduction
+calculation, the states of the conduction stage are unfolded, including
+those of the bandstructure NGWFs of ``TASK : BANDSTRUCTURE``; see
+:ref:`bsunfold`.
 
 .. _bsunfld-kpoint-path:
 
@@ -325,7 +328,10 @@ BSUNFLD_NUM_EIGENVALUES
 :Group: BS_UNFOLDING
 :Search: :searchlink:`BSUNFLD_NUM_EIGENVALUES`
 
-Enforce provided number of kpts per path
+Number of states unfolded on either side of the highest occupied state.
+If negative, the number of occupied states, or, for unprojected conduction
+NGWFs, the number of states in the conduction window. It is limited to
+these numbers.
 
 .. _bsunfld-num-kpts-path:
 
@@ -353,7 +359,7 @@ BSUNFLD_RESTART
 :Group: BS_UNFOLDING
 :Search: :searchlink:`BSUNFLD_RESTART`
 
-Restart a bs-unfolding calculation
+Restart a bs-unfolding calculation (requires ``NUM_KPARS`` 1)
 
 .. _bsunfld-transformation:
 

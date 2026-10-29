@@ -55,6 +55,13 @@ Both tasks require ``kpoint_method : PW``. Without it, they are replaced by
 ``PROPERTIES``, which calculates the bandstructure in the ground-state NGWF
 basis (see ``bs_method`` and :ref:`bsunfold` for those calculations).
 
+With ``bsunfld_calculate : T``, ``BANDSTRUCTURE`` also unfolds the spectral
+function of the states of the bandstructure NGWFs, for a supercell built
+along lattice vectors along which the NGWFs are not extended and the path
+has no components, onto the primitive cell, along any unfolding path whose
+components along the other lattice vectors lie on the bandstructure path
+(see :ref:`bsunfold`).
+
 Input
 =====
 
