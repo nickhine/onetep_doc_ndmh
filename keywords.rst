@@ -15647,7 +15647,7 @@ NSCF_KPOINTS
 
 K-points of the NSCF stage
 
-The k-points at which tasks NSCF and PROPERTIES_NSCF optimise or read their NGWFs: SCF, the k-points of the ground state (as for task COND), or PATH, those along NSCF_KPOINT_PATH, for a bandstructure (see :ref:`bandstructure_pw`). Tasks COND and PROPERTIES_COND always use the SCF k-points, and this keyword is not allowed with them.
+The k-points at which tasks NSCF and PROPERTIES_NSCF optimise or read their NGWFs: SCF, the k-points of the ground state (as for task COND); PATH, those along NSCF_KPOINT_PATH, for a bandstructure; MESH, those of a Monkhorst-Pack mesh given by NSCF_KPOINT_GRID_SIZE (or NSCF_KPOINT_MP_SPACING), NSCF_KPOINT_GRID_SHIFT, NSCF_KPOINT_GAMMA_CENTRED and NSCF_KPOINT_SYMMETRY; or LIST, those of NSCF_KPOINT_LIST (see :ref:`bandstructure_pw`). The keywords of the other choices are errors. Tasks COND and PROPERTIES_COND always use the SCF k-points, and this keyword is not allowed with them.
 
 .. note::
    :collapsible: closed
@@ -15663,6 +15663,164 @@ The k-points at which tasks NSCF and PROPERTIES_NSCF optimise or read their NGWF
    .. code::
 
       NSCF_KPOINTS PATH
+
+.. _nscf-kpoint-gamma-centred:
+
+NSCF_KPOINT_GAMMA_CENTRED
+-------------------------
+
+:Type: Boolean
+:Default: FALSE
+:Unit: None
+:Level: Intermediate
+:Group: NSCF
+:Search: :searchlink:`NSCF_KPOINT_GAMMA_CENTRED`
+
+Gamma-centred NSCF k-point mesh
+
+With NSCF_KPOINTS MESH, shift even meshes to include the Gamma point, as KPOINT_GAMMA_CENTRED for the ground state.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      NSCF_KPOINT_GAMMA_CENTRED [Logical]
+
+   :Example:
+
+   .. code::
+
+      NSCF_KPOINT_GAMMA_CENTRED T
+
+.. _nscf-kpoint-grid-shift:
+
+NSCF_KPOINT_GRID_SHIFT
+----------------------
+
+:Type: String
+:Default: '0 0 0'
+:Unit: None
+:Level: Intermediate
+:Group: NSCF
+:Search: :searchlink:`NSCF_KPOINT_GRID_SHIFT`
+
+Shift of the NSCF k-point mesh
+
+With NSCF_KPOINTS MESH, the shift (0 or 1) of the mesh along each reciprocal lattice vector, as KPOINT_GRID_SHIFT for the ground state.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      NSCF_KPOINT_GRID_SHIFT [Text]
+
+   :Example:
+
+   .. code::
+
+      NSCF_KPOINT_GRID_SHIFT 0 0 1
+
+.. _nscf-kpoint-grid-size:
+
+NSCF_KPOINT_GRID_SIZE
+---------------------
+
+:Type: String
+:Default: '1 1 1'
+:Unit: None
+:Level: Basic
+:Group: NSCF
+:Search: :searchlink:`NSCF_KPOINT_GRID_SIZE`
+
+Size of the NSCF k-point mesh
+
+With NSCF_KPOINTS MESH, the number of k-points of the Monkhorst-Pack mesh along each reciprocal lattice vector, as KPOINT_GRID_SIZE for the ground state.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      NSCF_KPOINT_GRID_SIZE [Text]
+
+   :Example:
+
+   .. code::
+
+      NSCF_KPOINT_GRID_SIZE 8 8 8
+
+.. _nscf-kpoint-list:
+
+NSCF_KPOINT_LIST
+----------------
+
+:Type: Block
+:Default: None
+:Unit: None
+:Level: Basic
+:Group: NSCF
+:Search: :searchlink:`NSCF_KPOINT_LIST`
+
+K-point list of the NSCF stage
+
+With NSCF_KPOINTS LIST, one k-point per line, in fractional coordinates of the reciprocal lattice vectors, optionally followed by its weight (default 1; the weights are normalised), as KPOINTS_LIST for the ground state.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      %BLOCK NSCF_KPOINT_LIST
+
+   :Example:
+
+   .. code::
+
+      %BLOCK NSCF_KPOINT_LIST
+      0.0 0.0 0.0 1.0
+      0.0 0.0 0.5 1.0
+      %ENDBLOCK NSCF_KPOINT_LIST
+
+.. _nscf-kpoint-mp-spacing:
+
+NSCF_KPOINT_MP_SPACING
+----------------------
+
+:Type: Physical
+:Default: 0.0
+:Unit: 1/bohr
+:Level: Intermediate
+:Group: NSCF
+:Search: :searchlink:`NSCF_KPOINT_MP_SPACING`
+
+Minimum spacing of the NSCF k-point mesh
+
+With NSCF_KPOINTS MESH, the minimum spacing of the mesh along each reciprocal lattice vector, in place of NSCF_KPOINT_GRID_SIZE, as KPOINT_MP_SPACING for the ground state.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      NSCF_KPOINT_MP_SPACING [Physical]
+
+   :Example:
+
+   .. code::
+
+      NSCF_KPOINT_MP_SPACING 0.03 1/bohr
 
 .. _nscf-kpoint-path:
 
@@ -15729,6 +15887,37 @@ With NSCF_KPOINTS PATH, the maximum spacing of the k-points along each segment o
 
       NSCF_KPOINT_PATH_SPACING 0.05 1/bohr
 
+.. _nscf-kpoint-symmetry:
+
+NSCF_KPOINT_SYMMETRY
+--------------------
+
+:Type: Boolean
+:Default: FALSE
+:Unit: None
+:Level: Intermediate
+:Group: NSCF
+:Search: :searchlink:`NSCF_KPOINT_SYMMETRY`
+
+Reduce the NSCF k-point mesh by symmetry
+
+With NSCF_KPOINTS MESH, reduce the mesh by the symmetry operations of the calculation and time reversal, as for the ground state; by default the full mesh is used, with equal weights.
+
+.. note::
+   :collapsible: closed
+
+   :Syntax:
+
+   .. code::
+
+      NSCF_KPOINT_SYMMETRY [Logical]
+
+   :Example:
+
+   .. code::
+
+      NSCF_KPOINT_SYMMETRY T
+
 .. _nscf-projections:
 
 NSCF_PROJECTIONS
@@ -15743,7 +15932,7 @@ NSCF_PROJECTIONS
 
 Band weights along the NSCF path
 
-With NSCF_KPOINTS PATH, the weights of each atom or pseudoatomic orbital in each band along the path, written to <root>_BS.pdos_weights. One of NONE, ATOM_MULLIKEN, ATOM_LOWDIN (Mulliken or Lowdin populations of the NGWFs on each atom), PAO_LOWDIN or PAO_MULLIKEN (projections onto the pseudoatomic orbitals of the species_cond block). See :ref:`bandstructure_pw`.
+With NSCF_KPOINTS PATH, MESH or LIST, the weights of each atom or pseudoatomic orbital in each band at each k-point, written to <root>_BS.pdos_weights. One of NONE, ATOM_MULLIKEN, ATOM_LOWDIN (Mulliken or Lowdin populations of the NGWFs on each atom), PAO_LOWDIN or PAO_MULLIKEN (projections onto the pseudoatomic orbitals of the species_cond block). See :ref:`bandstructure_pw`.
 
 .. note::
    :collapsible: closed

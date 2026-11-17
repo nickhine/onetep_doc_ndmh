@@ -433,6 +433,29 @@ For example, for a monolayer of 2H-MoS\ :sub:`2` with the 13 valence bands
 (``cond_num_states : 26``), the top valence band at K is split by about
 0.15 eV into two bands with :math:`\langle S_z \rangle \approx \pm 1/2`.
 
+Other k-points: meshes and lists
+================================
+
+The same stage can optimise NGWFs at the k-points of a Monkhorst-Pack mesh
+or of an explicit list, instead of a path, for example to obtain the
+eigenvalues of all the bands of interest on a denser mesh than that of the
+ground state:
+
+-  ``nscf_kpoints : MESH``, with ``nscf_kpoint_grid_size`` (or
+   ``nscf_kpoint_mp_spacing``), ``nscf_kpoint_grid_shift`` and
+   ``nscf_kpoint_gamma_centred``, as for the ground state. The full mesh is
+   used, with equal weights, unless ``nscf_kpoint_symmetry : T``, which
+   reduces it by the symmetry of the calculation.
+
+-  ``nscf_kpoints : LIST``, with ``%block nscf_kpoint_list``, as
+   ``%block kpoints_list`` for the ground state.
+
+Everything else is as for a path: the NGWFs, the number of bands, the
+restart files (with ``_bs`` in their names) and the ``.bands`` and
+``.pdos_weights`` files, in which each k-point has its own weight. The
+output table of the eigenvalues along the path and the ``.agr`` file are
+written only for a path.
+
 Output files
 ============
 
