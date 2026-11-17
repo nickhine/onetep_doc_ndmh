@@ -456,6 +456,16 @@ restart files (with ``_bs`` in their names) and the ``.bands`` and
 output table of the eigenvalues along the path and the ``.agr`` file are
 written only for a path.
 
+For a mesh or a list, the properties of the states of the NSCF NGWFs are
+then calculated, as for unprojected conduction NGWFs (see
+:doc:`conduction`), but not those of the ground-state NGWFs, which are at
+the k-points of the ground state. These include the Wannier90 files
+(``w90_write_mmn``, ``w90_write_amn``, ``w90_write_eig``,
+``w90_write_unk``), which are then written by this stage only, at its
+k-points. Wannier90 needs the full mesh in its own order, (i/n1, j/n2,
+l/n3) with i slowest: a ``nscf_kpoint_list`` in that order, or an even
+``nscf_kpoint_grid_size`` with ``nscf_kpoint_gamma_centred : T``.
+
 Output files
 ============
 
