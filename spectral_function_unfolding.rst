@@ -139,7 +139,8 @@ For each in turn:
 Conduction states
 =================
 
-In a conduction calculation (``TASK : COND`` or ``PROPERTIES_COND``), the
+In a conduction calculation (``TASK : COND`` or ``PROPERTIES_COND``, or
+``NSCF`` or ``PROPERTIES_NSCF``), the
 spectral function is that of the states of the conduction stage, and the
 states of the valence NGWFs are not unfolded. With unprojected conduction
 NGWFs (``COND_UNPROJECTED : T``, or a conduction calculation with EDFT; see
@@ -184,7 +185,8 @@ The k-points of the calculation can come from:
    ``BSUNFLD_NUM_KPTS_PATH`` such that its points fall on the mesh.
 
 -  the k-point path of a conduction bandstructure calculation
-   (``TASK : BANDSTRUCTURE``, see :ref:`bandstructure_pw`), along the
+   (``TASK : NSCF`` with ``NSCF_KPOINTS : PATH``, see
+   :ref:`bandstructure_pw`), along the
    extended lattice vectors. The spectral function can then be unfolded
    along any path whose components along the extended lattice vectors lie
    on that path, with ``BSUNFLD_CALCULATE : T`` in the same calculation.

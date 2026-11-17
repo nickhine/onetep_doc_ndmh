@@ -502,8 +502,8 @@ The following are supported with more than one k-point:
 - Forces and geometry optimisation (but no cell optimisation).
 - Conduction NGWF optimisation (``task : COND``), in PW mode only.
 - Bandstructures along a path in PW mode, with NGWFs optimised at each
-  k-point of the path (tasks ``BANDSTRUCTURE`` and
-  ``PROPERTIES_BANDSTRUCTURE``, see :doc:`bandstructure_pw`).
+  k-point of the path (tasks ``NSCF`` and ``PROPERTIES_NSCF`` with
+  ``nscf_kpoints : PATH``, see :doc:`bandstructure_pw`).
 - In the properties module:
 
   - charge density, spin density and potential outputs, and the electric
