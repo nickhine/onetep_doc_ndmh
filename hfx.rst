@@ -499,10 +499,12 @@ subset of the SW basis set (e.g. for benchmarking, or doing DMA with a
 lower :math:`q_{\textrm{max}}` than you use for HFx), but not for HFx
 (where you must use the same value that you used in the SWRI block).
 
-With the above set up, the last step is to choose a suitable functional
-through ``xc_functional``. The following hybrid functionals use HFx:
-``B1LYP``, ``B1PW91``, ``B3LYP``, ``B3PW91``, ``PBE0``, ``X3LYP``. For a
-pure Hartree-Fock calculation use ``HF``.
+With the above set up, the last step is to choose a suitable
+functional through ``xc_functional``. The following hybrid functionals
+use HFx: ``B1LYP``, ``B1PW91``, ``B3LYP``, ``B3PW91``, ``PBE0``,
+``X3LYP``, ``YS-PBE0``, ``HSE06``. The last two are screened hybrid
+functionals, which are discussed in more detail below. For a pure
+Hartree-Fock calculation use ``HF``.
 
 | The following two keywords might be handy:
 | ``hfx_cutoff (physical)`` – specifies the distance-based cutoff for
@@ -523,6 +525,32 @@ the SWRI stage (``V`` or ``O``, respectively).
 Other HFx-related keywords (``hfx_nlpp_for_exchange``,
 ``hfx_read_xmatrix`` and ``hfx_write_xmatrix``) correspond to
 experimental features and should not be used.
+
+Screened and range-separated hybrid functionals
+---------------------------
+
+Screened and range-separated hybrid functionals are different to
+global hybrid functionals like B3LYP or PBE0, because they apply a
+screening to the Coulomb potential, so that exchange is only treated
+exactly in either the short- or long-range limit, with exchange in the
+opposite limit treated semi-locally. Screened hybrids keep exact
+exchange at short-range, and are most often used in solids;
+range-separated hybrids keep exact exchange at long-range, and are
+most often used in quantum chemistry. ONETEP currently features
+YS-PBE0 [Tran2011]_ and HSE06 [Heyd2003]_, both of which are screened
+hybrids. Using these functionals requires no special input parameters,
+and they can be turned on in exactly the same way as global hybrid
+functionals.
+
+The difference between YS-PBE0 and HSE06 is the function used to
+screen the bare Coulomb potential. In YS-PBE0, an exponential (Yukawa)
+screening is used; in HSE06, error function screening is used. The
+parameters of YS-PBE0 were picked to mimic HSE06, which is a very
+widely used functional. The spherical wave basis works best with
+Yukawa screening, as it allows integrals to be done analytically, so
+calculations with Yukawa screening are generally faster than those
+using error function screening, which requires more numerical
+computation.
 
 Example
 -------
@@ -1359,3 +1387,7 @@ hybrid LR-TDDFT should be directed at James C. Womack,
 [Dziedzic2016] J. Dziedzic, Y. Mao, Y. Shao, J. Ponder, T. Head-Gordon, M. Head-Gordon, and C.-K. Skylaris, *J. Chem. Phys.* **145**, 124106 (2016)
 
 [Vitale2015] V. Vitale, J. Dziedzic, S. M.-M. Dubois, H. Fangohr, and C.-K. Skylaris, *J. Chem. Theory Comput.* **11**, 3321 (2015)
+
+[Tran2011] F. Tran, and P. Blaha, *Phys. Rev. B* **83**, 235118 (2020)
+
+[Heyd2003] J. Heyd, G. E. Scuseria, and M. Ernzerhof, *J. Chem. Phys,* **118**, 8207 (2003)
