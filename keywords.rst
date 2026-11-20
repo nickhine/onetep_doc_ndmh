@@ -373,7 +373,7 @@ BSUNFLD_TRANSFORMATION
 :Group: BS_UNFOLDING
 :Search: :searchlink:`BSUNFLD_TRANSFORMATION`
 
-Transformation matrix (flattened) between primitive-cell and supercell lattice vectors
+Integer transformation matrix (flattened) between primitive-cell and supercell lattice vectors
 
 Transformation matrix (flattened) between primitive-cell and supercell lattice vectors when unfolding bandstructure
 
