@@ -47,16 +47,16 @@ for how to compile ONETEP, and how to run quality-check (“QC”)
 tests that will give you confidence in the robustness of your installation.
 There are also instructions on how to actually submit (start) your jobs.
 
-These instructions differ depending on your environment (the machine on which
+The exact steps differ depending on your environment (the machine on which
 you will run ONETEP and the installed software, such as compilers or external
 libraries). **They are provided separately**.
 
   1. Go to the directory with your ONETEP installation.
   2. Change to the ``hpc_resources`` directory. There you will see a number of
-     well-supported systems, such as ``Archer2`` or ``Young`` (and more).
+     well-supported systems, such as ``Iridis6`` or ``Cirrus`` (and more).
   3. If your machine is well-supported by ONETEP, just follow the compilation,
      testing and running instructions there. For instance, instructions for
-     Iridis5 would be found at hpc_resources/Iridis5/instructions_iridis5.pdf.
+     Iridis6 would be found at hpc_resources/Iridis6/instructions_iridis6.pdf.
 
      If your machine is not in the list of well-supported systems, you will need
      to adapt one of the existing configs. Look into the subdirectories under
@@ -88,6 +88,33 @@ libraries). **They are provided separately**.
     to update your repository via ``git pull`` or ``git fetch`` may be
     tricky when you have unfinished or improperly cleaned up QC tests. Just
     don't run them straight in the repository.
+
+**Interpreting the results of QC tests**:
+
+.. note:: Once the QC test suite runs to completion, you should examine the
+    output for a line that looks like this (actual numbers can differ, of course)::
+
+       All done. 311 out of 311 tests passed (28 warnings, 5 skipped).
+
+    The expectation is for all test to pass, that is for the first two numbers
+    to be equal. Skipped tests are fine -- they indicate that the ONETEP executable
+    does not have some features that were meant to be tested. For example, the
+    Wannier90 interface or the multigrid solver can be absent form your version.
+    This is normally harmless, unless you know you want this functionality. Look
+    for ``SKIPPED`` in the output to identify which tests were skipped, if you
+    are concerned.
+
+    Warnings are typically harmless. They are usually the result of some low-grade
+    ill-conditioning in the test inputs -- such as a crystalline structure being used,
+    which leads to near-zero forces. The testing system is sensitive not only
+    to absolute differences, but also to relative difference. A relative difference
+    on a near-zero quantity can be arbitrarily large. So just ignore them.
+
+    If you see any failing tests, it's a cause for concern. It might indicate
+    something wrong with the environment (e.g. a compiler or MPI bug), or with
+    ONETEP. Proceed with caution. Identify the test by looking for ``FAILED`` in
+    the output. Share the directory with the failed test with the developers --
+    preferably by opening an Issue on GitHub, or via email as a last resort.
 
 
 Creating input files
