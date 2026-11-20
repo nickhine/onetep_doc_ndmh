@@ -60,11 +60,6 @@ The bandstructure in the ground-state NGWF basis is calculated instead by
 ``PROPERTIES``, with ``%block bs_kpoint_path`` (see ``bs_method`` and
 :ref:`bsunfold` for those calculations).
 
-These tasks replace ``BANDSTRUCTURE`` and ``PROPERTIES_BANDSTRUCTURE``,
-which were never in a release: those names now stop with an error that
-names the replacement, as do the keywords ``bs_projections`` and
-``bs_write_agr``.
-
 With ``bsunfld_calculate : T``, ``NSCF`` also unfolds the spectral
 function of the states of the bandstructure NGWFs, for a supercell built
 along lattice vectors along which the NGWFs are not extended and the path
