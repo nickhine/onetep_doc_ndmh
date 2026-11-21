@@ -257,6 +257,13 @@ the NGWFs, :math:`O` the overlap matrix of the PAOs with the NGWFs, and
 ``PAO_MULLIKEN``
    :math:`w_{\mu n} = \mathrm{Re}\left[ (\Lambda^{-1} O M)^*_{\mu n} (O M)_{\mu n} \right]`.
 
+``PAO_LOWDIN_AMPLITUDES``
+   The ``PAO_LOWDIN`` weights, and in addition the complex amplitudes
+   :math:`A_{\mu n} = (\Lambda^{-1/2} O M)_{\mu n}` in
+   ``<root>_BS.pao_amplitudes`` (see `Output files`_), for building
+   tight-binding Hamiltonians in the Löwdin-orthogonalised PAOs. Not
+   available with ``bs_perturbative_soc``.
+
 ``NONE`` (the default) gives no projections. All the overlaps include the
 PAW augmentation terms when PAW is used. For the PAO projections, the
 PAOs are those of ``%block species_cond``, constructed at each path
@@ -493,6 +500,22 @@ Output files
    spinor bands, and each band line ends with :math:`\langle S_z \rangle`
    (see `Spin-orbit coupling`_).
 
+``<root>_BS.pao_amplitudes``
+   With ``nscf_projections : PAO_LOWDIN_AMPLITUDES``, the amplitudes
+   :math:`A_{\mu n}(\mathbf{k})` of each band on the Löwdin-orthogonalised
+   PAOs, in the layout of ``<root>_BS.pdos_weights``. Each ``# K-point``
+   line also gives the weight of the k-point, and each band line gives the
+   band index, the energy (Ha), the spilling, and the real and imaginary
+   parts of :math:`A_{\mu n}` for each PAO in turn. The Bloch sums of the
+   PAOs are centred on their atoms,
+   :math:`\chi_\mu(\mathbf{k}) = \sum_{\mathbf{R}} e^{i\mathbf{k}\cdot(\mathbf{R}+\boldsymbol{\tau}_\mu)} \phi_\mu(\mathbf{r}-\mathbf{R}-\boldsymbol{\tau}_\mu)`
+   (before Löwdin orthogonalisation), so that
+   :math:`H_{\mu\nu}(\mathbf{R}) = \sum_{\mathbf{k}} w_{\mathbf{k}} e^{-i\mathbf{k}\cdot(\mathbf{R}+\boldsymbol{\tau}_\nu-\boldsymbol{\tau}_\mu)} \sum_n A_{\mu n} \epsilon_n A^*_{\nu n}`
+   on a full mesh.
+   Each band has an arbitrary phase, and degenerate bands an arbitrary
+   mixing, so only quantities such as
+   :math:`\sum_n A_{\mu n} \epsilon_n A^*_{\nu n}` are meaningful.
+
 ``<root>_BS.agr``
    With ``nscf_write_agr : T``, the bands in xmgrace format.
 
@@ -562,8 +585,8 @@ Keywords
    occupancies at the top of the window of bands.
 
 -  ``nscf_projections`` [Intermediate, string, default ``NONE``] The band
-   weights: ``NONE``, ``ATOM_MULLIKEN``, ``ATOM_LOWDIN``, ``PAO_LOWDIN`` or
-   ``PAO_MULLIKEN``.
+   weights: ``NONE``, ``ATOM_MULLIKEN``, ``ATOM_LOWDIN``, ``PAO_LOWDIN``,
+   ``PAO_MULLIKEN`` or ``PAO_LOWDIN_AMPLITUDES``.
 
 -  ``bs_perturbative_soc`` [Basic, logical, default ``F``] Add spin-orbit
    coupling perturbatively to the bands (see `Spin-orbit coupling`_).

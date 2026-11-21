@@ -15932,7 +15932,7 @@ NSCF_PROJECTIONS
 
 Band weights along the NSCF path
 
-With NSCF_KPOINTS PATH, MESH or LIST, the weights of each atom or pseudoatomic orbital in each band at each k-point, written to <root>_BS.pdos_weights. One of NONE, ATOM_MULLIKEN, ATOM_LOWDIN (Mulliken or Lowdin populations of the NGWFs on each atom), PAO_LOWDIN or PAO_MULLIKEN (projections onto the pseudoatomic orbitals of the species_cond block). See :ref:`bandstructure_pw`.
+With NSCF_KPOINTS PATH, MESH or LIST, the weights of each atom or pseudoatomic orbital in each band at each k-point, written to <root>_BS.pdos_weights. One of NONE, ATOM_MULLIKEN, ATOM_LOWDIN (Mulliken or Lowdin populations of the NGWFs on each atom), PAO_LOWDIN or PAO_MULLIKEN (projections onto the pseudoatomic orbitals of the species_cond block), or PAO_LOWDIN_AMPLITUDES (PAO_LOWDIN, and the complex amplitudes in <root>_BS.pao_amplitudes). See :ref:`bandstructure_pw`.
 
 .. note::
    :collapsible: closed
