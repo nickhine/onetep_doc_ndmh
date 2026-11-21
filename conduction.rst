@@ -166,9 +166,13 @@ plotting of the orbitals.
 The conduction calculation is the non-self-consistent (NSCF) stage of
 ONETEP at the k-points of the ground state. TASK=COND is the same as
 TASK=NSCF with NSCF\_KPOINTS SCF (the default), and TASK=PROPERTIES\_COND
-the same as TASK=PROPERTIES\_NSCF; each prints a line saying so. With
-NSCF\_KPOINTS PATH, the same stage calculates a bandstructure along a path
-instead (see :ref:`bandstructure_pw`).
+the same as TASK=PROPERTIES\_NSCF; each prints a line saying so. The one
+difference is that TASK=COND always calculates the properties after the
+NGWF optimisation, while TASK=NSCF does so only with DO\_PROPERTIES T;
+otherwise they are calculated by a following TASK=PROPERTIES\_NSCF
+(TASK=SINGLEPOINT NSCF PROPERTIES\_NSCF). With NSCF\_KPOINTS PATH, the
+same stage calculates a bandstructure along a path instead (see
+:ref:`bandstructure_pw`).
 
 Automatic setup of COND\_NUM\_STATES
 ------------------------------------

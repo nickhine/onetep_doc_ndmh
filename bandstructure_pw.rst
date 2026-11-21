@@ -451,15 +451,20 @@ restart files (with ``_bs`` in their names) and the ``.bands`` and
 output table of the eigenvalues along the path and the ``.agr`` file are
 written only for a path.
 
-For a mesh or a list, the properties of the states of the NSCF NGWFs are
-then calculated, as for unprojected conduction NGWFs (see
-:doc:`conduction`), but not those of the ground-state NGWFs, which are at
-the k-points of the ground state. These include the Wannier90 files
+For a mesh or a list, ``PROPERTIES_NSCF`` (or ``NSCF`` with
+``do_properties : T``) calculates the properties of the states of the NSCF
+NGWFs, as for unprojected conduction NGWFs (see :doc:`conduction`), but
+not those of the ground-state NGWFs, which are at the k-points of the
+ground state; ``task : SINGLEPOINT NSCF PROPERTIES_NSCF`` does all three
+stages in one run. These properties include the Wannier90 files
 (``w90_write_mmn``, ``w90_write_amn``, ``w90_write_eig``,
 ``w90_write_unk``), which are then written by this stage only, at its
-k-points. Wannier90 needs the full mesh in its own order, (i/n1, j/n2,
-l/n3) with i slowest: a ``nscf_kpoint_list`` in that order, or an even
-``nscf_kpoint_grid_size`` with ``nscf_kpoint_gamma_centred : T``.
+k-points. Wannier90 needs the full unshifted mesh in its own order, (i/n1,
+j/n2, l/n3) with i slowest: a ``nscf_kpoint_list`` in that order, or a
+``nscf_kpoint_grid_size`` with ``nscf_kpoint_gamma_centred : T`` (or, for
+odd sizes, no shift) and ``nscf_kpoint_symmetry : F``. Without symmetry, the
+mesh is generated in that order (modulo 1, each fractional coordinate in
+(-1/2,1/2]). The Wannier90 files are not available with PAW.
 
 Output files
 ============
